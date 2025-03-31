@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>渣男鉴定器｜测测TA的隐藏属性</title>
+    <meta name="description" content="10秒测出TA的渣男指数，闺蜜都在玩！">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 调试信息 -->
+        <div style="display: none;">
+            当前页面: {{ currentPage }}
+            <br>
+            问题数量: {{ questions.length }}
+            <br>
+            当前问题索引: {{ currentQuestionIndex }}
+        </div>
+
+        <!-- 首页 -->
+        <div class="page start-page" v-show="currentPage === 'start'">
+            <h1>渣男鉴定器</h1>
+            <p>回答15道题，解锁TA的隐藏属性</p>
+            <div class="name-input">
+                <input 
+                    type="text" 
+                    v-model="boyfriendName" 
+                    placeholder="请输入男友称呼"
+                    maxlength="10"
+                >
+            </div>
+            <button @click="initTest">开始测试</button>
+            <div class="disclaimer">* 本测试仅供娱乐，结果仅供参考</div>
+        </div>
+
+        <!-- 答题页 -->
+        <div class="page quiz-page" v-show="currentPage === 'quiz' && currentQuestion">
+            <div class="progress-bar">
+                <div class="progress" :style="{width: progress + '%'}"></div>
+                <span>{{ currentQuestionIndex + 1 }}/{{ questions.length }}</span>
+            </div>
+
+            <div class="question-card" v-if="currentQuestion">
+                <h2>{{ currentQuestion.text }}</h2>
+                <div class="options">
+                    <div 
+                        v-for="(option, index) in currentQuestion.options" 
+                        :key="index"
+                        class="option"
+                        @click="selectOption(option)"
+                        :class="{selected: selectedOption === option}"
+                    >
+                        {{ option.text }}
+                    </div>
+                </div>
+            </div>
+
+            <button class="prev-btn" @click="prevQuestion" v-show="currentQuestionIndex > 0">上一题</button>
+        </div>
+
+        <!-- 结果页 -->
+        <div class="page result-page" v-show="currentPage === 'result'">
+            <div class="result-container">
+                <h1 class="result-title">渣男鉴定报告</h1>
+                <div class="test-subject">测试对象：{{ boyfriendName }}</div>
+                <div class="result-emoji" v-if="resultData">
+                    {{ resultData.emoji }}
+                </div>
+                <div class="score-wrapper">
+                    <div class="score-circle" :style="{borderColor: resultColor}">
+                        <span class="score-number">{{ score }}%</span>
+                        <span class="score-label">含渣量</span>
+                    </div>
+                    <div class="result-badge" :style="{backgroundColor: resultColor}">
+                        {{ resultLabel }}
+                    </div>
+                </div>
+                <p class="result-desc">{{ resultDescription }}</p>
+                
+                <div class="tips">
+                    <h3>🚨 风险提示</h3>
+                    <ul>
+                        <li v-for="(tip, index) in resultTips" :key="index">{{ tip }}</li>
+                    </ul>
+                </div>
+
+                <div class="suggestion">
+                    <h3>💝 对男友建议</h3>
+                    <p>{{ resultSuggestion }}</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="share-btn" @click="shareResult">
+                        <span class="icon">🔗</span>
+                        生成分享图
+                    </button>
+                    <button class="restart-btn" @click="restartTest">
+                        <span class="icon">🔄</span>
+                        重新测试
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
